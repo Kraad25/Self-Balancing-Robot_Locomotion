@@ -19,18 +19,36 @@ class LQR(Node):
         super().__init__("lqr_values")
         self.get_logger().info("LQR is Computing Values")
 
+        # Publisher and Subscription Definition
         self.lqr_inp = self.create_subscription(Imu, '/lqr_input', self.lqrCallback, 10)
         self.lqr_output = self.create_publisher(Twist, '/motor_cmds', 10)
+        self.movement = self.create_subscription(Float32, '/isMoving', self.movementCallback, 10)
 
+        # LQR
         self.Q = np.array([[20, 0], [0, 50]])
         self.R = 2.0
         self.K, self.S, self.e = lqr(A, B, self.Q, self.R)
+        # Movement
+        self.is_moving = False
+        self.desired_tilt = 0.0
+
+    def movementCallback(self, msg: Float32):
+        self.get_logger().info(f"Received: {msg.data}")
+        self.desired_tilt = msg.data
+
+        if abs(self.desired_tilt) >= 0.1:
+            self.is_moving = True
+        else:
+            self.is_moving = False
         
 
-    def lqrCallback(self, data: Imu): 
+    def lqrCallback(self, data: Imu):
         # Read tilt and angular velocity directly from IMU message
         tilt_angle = data.orientation.y * 180 / 3.1416  # Convert pitch (tilt) to degrees
         tilt_rate = data.angular_velocity.y 
+
+        if self.is_moving:
+            tilt_angle = self.desired_tilt
 
         np_x = np.array([[tilt_angle], [tilt_rate]])
         # Calculate feedback gain for tilt

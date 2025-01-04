@@ -10,7 +10,7 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
 
-    pkg_path = get_package_share_directory("sbr_pjt")   # Enter your package name here
+    pkg_path = get_package_share_directory("sbr_locomotion")   # Enter your package name here
     urdf_file = os.path.join(pkg_path, 'urdf', 'sbr.urdf')
     world_file = os.path.join(pkg_path, 'worlds', 'custom.world')
 
@@ -47,19 +47,19 @@ def generate_launch_description():
 
     # IMU Node
     imu = Node(
-        package='sbr_pjt',
+        package='sbr_locomotion',
         executable='imuReader.py',
         output='screen')          
 
     # LQR Node 
     lqr = Node(
-        package='sbr_pjt',
+        package='sbr_locomotion',
         executable='lqr.py',      
         output='screen')          
     
     # Differential Drive Node 
     differentialDrive = Node(
-        package='sbr_pjt',
+        package='sbr_locomotion',
         executable='differentialDrive.py',
         output='screen')            
     
