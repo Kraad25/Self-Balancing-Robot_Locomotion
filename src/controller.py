@@ -2,7 +2,7 @@
 
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, String
 import termios
 import tty
 import sys
@@ -12,11 +12,10 @@ class WASDController(Node):
     def __init__(self):
         super().__init__('wasd_controller')
         self.get_logger().info("Initialized, Ready to be Controlled")
-        self.publisher = self.create_publisher(Float32, '/isMoving', 10)
+        self.publisher = self.create_publisher(String, '/isMoving', 10)
 
         self.timer = self.create_timer(0.1, self.check_key)
         self.settings = termios.tcgetattr(sys.stdin)
-        self.desired_tilt = 0.0
 
     def get_key(self):
         tty.setraw(sys.stdin.fileno())
@@ -27,19 +26,20 @@ class WASDController(Node):
 
     def check_key(self):
         key = self.get_key()
-        msg = Float32()
+        msg = String()
 
         if key == 'w':
-            self.desired_tilt = -5.0  # Tilt forward
+            msg.data = 'Forward'  # Move forward
         elif key == 's':
-            self.desired_tilt = +5.0  # Tilt backward
-        elif key == 'a' or key == 'd':
-            pass  
+            msg.data = 'Backward' # Move backward
+        elif key == 'a':
+            msg.data = 'Left'   # Turn Left
+        elif key == 'd':
+            msg.data = 'Right'  # Turn Right
         elif key == 'x':
-            self.desired_tilt = 0.0  # Reset tilt
+            msg.data = 'Stop' # Reset
 
         # Publish the desired tilt
-        msg.data = self.desired_tilt
         self.publisher.publish(msg)
         self.get_logger().info(f'Published Desired Tilt: {msg.data}')
 
