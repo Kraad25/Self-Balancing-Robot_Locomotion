@@ -11,10 +11,10 @@ import select
 class WASDController(Node):
     def __init__(self):
         super().__init__('wasd_controller')
-        self.get_logger().info("Initialized, Ready to be Controlled")
-        self.publisher = self.create_publisher(String, '/isMoving', 10)
+        self.get_logger().info("Controller Initialized. Ready for input")
+        self.publisher = self.create_publisher(String, '/user_input', 10)
 
-        self.timer = self.create_timer(0.1, self.check_key)
+        self.timer = self.create_timer(0.1, self.check_key) # 10 Hz
         self.settings = termios.tcgetattr(sys.stdin)
 
     def get_key(self):
@@ -38,14 +38,19 @@ class WASDController(Node):
             msg.data = 'Right'  # Turn Right
         elif key == 'x':
             msg.data = 'Stop' # Reset
-
-        # Publish the desired tilt
-        self.publisher.publish(msg)
-        self.get_logger().info(f'Published Desired Tilt: {msg.data}')
-
-        if key == '':  # CTRL-C to exit
+        elif key == '\x03':  # CTRL-C to exit
+            self.get_logger().info("Shutting down...")
             self.destroy_node()
             rclpy.shutdown()
+            return
+        else:
+            self.get_logger().info(f"Invalid key: {key}")
+            return
+
+
+        # Publish the Command
+        self.publisher.publish(msg)
+        self.get_logger().info(f'Published Desired Tilt: {msg.data}')
 
 if __name__ == '__main__':
     rclpy.init()

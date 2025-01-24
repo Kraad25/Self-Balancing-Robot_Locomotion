@@ -24,7 +24,7 @@ class DifferentialDrive(Node):
         # Publish adjusted wheel velocities
         cmd_msg = Twist()
         cmd_msg.linear.x = (left_wheel + right_wheel) * self.wheel_radius / 2
-        cmd_msg.angular.z = (right_wheel - left_wheel) * self.wheel_radius / self.wheel_base
+        cmd_msg.angular.z = (left_wheel - right_wheel ) * self.wheel_radius / self.wheel_base
         self.cmd_pub.publish(cmd_msg)
 
 
