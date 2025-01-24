@@ -1,11 +1,12 @@
-# Self-Balancing-Robot_ROS2
- This project simulates a Self-Balancing Robot using Linear Quadratic Algorithm(LQR). Developed with ROS2 Humble and Gazebo, The Robot uses IMU sensor to gather data and the LQR-based corrections to stabilize itself.
+# Self-Balancing-Robot_Locomotion
+ This project simulates a Self-Balancing Robot using Linear Quadratic Algorithm(LQR). Developed with ROS2 Humble and Gazebo, The Robot uses IMU sensor to gather data and the LQR-based corrections to stabilize itself.  The project focuses on locomotion control, including rotation and translation movements.
 
 ## Key Features
  * ROS2 Humble for robotic control.
  * Gazebo for physics based simulation.
  * LQR algorithm for dynamic balancing.
  * Real-time corrections using IMU sensor feedback.
+ * State Machine to handle Translation, Rotational and Static States
 
 ## User Instruction
 ### Prerequisites:
@@ -23,10 +24,17 @@
     ```bash
     sudo apt install ros-humble-tf-transformations
 
+ * Install Python Dependencies
+    ```bash
+    pip install numpy control
+    
 ### Installation and Setup:
  * Navigate to Your ROS2 Workspace.
  * Clone the Project (as a ROS2 Package)
     ```bash
-    git clone https://github.com/Kraad25/Self-Balancing-Robot_ROS2.git [package_name]
+    git clone https://github.com/Kraad25/Self-Balancing-Robot_Locomotion.git [package_name]
  * Build the Workspace and source it.
- * Launch the Simulation.
+ * Launch the Simulation in one terminal.
+ * Open another terminal and run the controller:
+    ```bash
+    ros2 run [package_name] controller.py
